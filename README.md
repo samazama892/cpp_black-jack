@@ -1,2 +1,2 @@
-# cpp_black-jack
+# C++ Black Jack
 A Black Jack implementation in C++.
