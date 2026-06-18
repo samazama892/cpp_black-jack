@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ostream>
+
 enum class Rank {
     Ace,
     Two,
@@ -15,3 +17,5 @@ enum class Rank {
     Queen,
     King
 };
+
+friend std::ostream& operator<<(std::ostream& os, const Rank& r);
