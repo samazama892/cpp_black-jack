@@ -1,8 +1,8 @@
+#include "Deck.hpp"
+
 #include <algorithm>
 #include <random>
 #include <stdexcept>
-
-#include "blackjack/Deck.hpp"
 
 /* Create a standard deck of 52 cards */
 Deck::Deck() {
