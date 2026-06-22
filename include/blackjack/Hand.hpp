@@ -1,18 +1,19 @@
 #pragma once
 
-#include "Card.hpp"
+#include "blackjack/Card.hpp"
 
-#include <vector>
 #include <cstdint>
 #include <ostream>
+#include <vector>
 
 class Hand {
 private:
-    std::vector<Card> cards_;
+  std::vector<Card> cards_;
+
+public:
+  friend std::ostream &operator<<(std::ostream &os, const Hand &h);
+
+  void addCard(const Card &card);
+  uint8_t getScore() const;
+  const std::vector<Card> &getCards() const;
 };
-
-friend std::ostream& operator<<(std::ostream& os, const Hand& h);
-
-void Hand::addCard(const Card& card);
-uint8_t Hand::getValue() const;
-const std::vector<Card>& Hand::getCards() const;

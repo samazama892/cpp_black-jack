@@ -1,13 +1,18 @@
 #pragma once
 
-#include "Suit.hpp"
-#include "Rank.hpp"
+#include "blackjack/Rank.hpp"
+#include "blackjack/Suit.hpp"
+
+#include <cstdint>
+#include <ostream>
 
 struct Card {
-    Suit suit;
-    Rank rank;
+  Suit suit;
+  Rank rank;
+
+  uint8_t getValue() const;
+  const Rank &getRank() const;
+  const Suit &getSuit() const;
+
+  friend std::ostream &operator<<(std::ostream &os, const Card &c);
 };
-
-friend std::ostream& operator<<(std::ostream& os, const Card& c);
-
-uint8_t Card::getValue() const;

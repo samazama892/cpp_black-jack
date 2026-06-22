@@ -6,7 +6,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
-add_executable(deck_tests test_Deck.cpp)
+add_executable(deck_tests test_Deck.cpp test_Hand_Player.cpp)
 target_link_libraries(deck_tests PRIVATE Catch2::Catch2WithMain blackjack)
 
 include(CTest)
