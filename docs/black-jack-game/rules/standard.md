@@ -10,7 +10,7 @@ Players do not compete against one another. Each player wins or loses independen
 
 ---
 
-# Objective
+## Objective
 
 A player wins by:
 
@@ -26,7 +26,7 @@ A player loses by:
 
 ---
 
-# Participants
+## Participants
 
 A game contains:
 
@@ -37,7 +37,7 @@ The dealer manages the deck and follows predefined drawing rules.
 
 ---
 
-# Card Values
+## Card Values
 
 | Card  | Value      |
 | ----- | ---------- |
@@ -60,7 +60,7 @@ An Ace is worth either 1 or 11, whichever produces the best valid hand.
 
 ---
 
-# Blackjack
+## Blackjack
 
 A Blackjack (also called a Natural) is:
 
@@ -79,7 +79,7 @@ Standard casinos typically pay Blackjack at 3:2 odds.
 
 ---
 
-# Round Setup
+## Round Setup
 
 At the start of each round:
 
@@ -103,13 +103,13 @@ Dealer:
 
 ---
 
-# Player Actions
+## Player Actions
 
 Starting from the dealer's left, each player takes a turn.
 
 During a turn, a player may perform one of the following actions.
 
-## Hit
+### Hit
 
 Receive one additional card.
 
@@ -120,7 +120,7 @@ The player may continue hitting until they:
 
 ---
 
-## Stand
+### Stand
 
 Take no more cards.
 
@@ -128,7 +128,7 @@ The player's turn immediately ends.
 
 ---
 
-# Bust
+## Bust
 
 A player busts when their hand value exceeds 21.
 
@@ -142,7 +142,7 @@ A busted player immediately loses the round.
 
 ---
 
-# Dealer Turn
+## Dealer Turn
 
 After all players have completed their turns:
 
@@ -161,7 +161,7 @@ The dealer cannot freely choose.
 
 ---
 
-# Dealer Bust
+## Dealer Bust
 
 If the dealer's hand exceeds 21:
 
@@ -175,23 +175,23 @@ All remaining non-busted players win.
 
 ---
 
-# Determining Winners
+## Determining Winners
 
 After the dealer finishes:
 
-## Player Busts
+### Player Busts
 
 Player loses immediately.
 
 ---
 
-## Dealer Busts
+### Dealer Busts
 
 All non-busted players win.
 
 ---
 
-## Dealer and Player Both Valid
+### Dealer and Player Both Valid
 
 Compare scores:
 
@@ -207,7 +207,7 @@ The player's bet is returned.
 
 ---
 
-# Example Round
+## Example Round
 
 Dealer:
 
@@ -232,7 +232,7 @@ Players:
 
 ---
 
-# Game Flow
+## Game Flow
 
 ```text
 Start Round
@@ -261,7 +261,7 @@ Next Round
 
 ---
 
-# Future Rule Variants
+## Future Rule Variants
 
 Optional rules often found in casinos:
 

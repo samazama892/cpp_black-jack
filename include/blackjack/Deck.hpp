@@ -1,16 +1,16 @@
 #pragma once
 
 #include <vector>
+#include <cstddef>
 #include "Card.hpp"
 
 class Deck {
-public:
-    Deck();
-
-    void shuffle();
-    Card draw();
-    std::size_t size() const noexcept;
-
 private:
     std::vector<Card> cards_; // Last card is the top of the deck
 };
+
+Deck::Deck();
+
+void Deck::shuffle();
+Card Deck::draw();
+std::size_t Deck::size() const noexcept;
