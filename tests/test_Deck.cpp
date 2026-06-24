@@ -2,6 +2,7 @@
 #include "blackjack/Rank.hpp"
 #include "blackjack/Suit.hpp"
 #include <catch2/catch_all.hpp>
+#include <set>
 
 TEST_CASE("Deck starts with 52 cards", "[deck]") {
   Deck d;

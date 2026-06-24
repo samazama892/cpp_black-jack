@@ -4,14 +4,14 @@
 
 #include <cstdint>
 #include <ostream>
+#include <vector>
 
 std::ostream &operator<<(std::ostream &os, const Hand &h) {
+  const std::vector<Card> &cards = h.getCards();
   os << "Hand { ";
-  for (const auto &card : h.getCards()) {
-    if (&card != &h.getCards().front()) { // Add a comma before all cards except
-                                          // the first and last one
-      os << ", ";
-    }
+  for (const auto &card : cards) {
+    // Add a comma before all cards except the first and last one
+    if (&card != &cards.front()) { os << ", "; }
     os << card;
   }
   os << " }";
@@ -20,23 +20,15 @@ std::ostream &operator<<(std::ostream &os, const Hand &h) {
 
 void Hand::addCard(const Card &card) { cards_.push_back(card); }
 
-void Hand::hit(const Deck& deck) {
-  Card card = deck.draw();
-  addCard(card);
-}
-
 void Hand::clear() { cards_.clear(); }
 
 uint8_t Hand::getScore() const {
   uint8_t value = 0;
-  uint8_t numAces = 0; // Since Aces can be worth 1 or 11 in order for the best
-                       // possible hand, we need to track how many we have
+  uint8_t numAces = 0; // Since Aces can be worth 1 or 11 in order for the best possible hand, we need to track how many we have
 
   for (const auto &card : cards_) {
     value += card.getValue();
-    if (card.getRank() == Rank::Ace) {
-      numAces++;
-    }
+    if (card.getRank() == Rank::Ace) { numAces++; }
   }
 
   while (value > 21 && numAces > 0) {

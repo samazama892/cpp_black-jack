@@ -3,10 +3,10 @@
 #include "blackjack/Rank.hpp"
 #include "blackjack/Suit.hpp"
 
-#include "blackjack/Player.hpp"
-
 #include <cstdint>
 #include <ostream>
+
+class Player;
 
 struct Card {
   Suit suit;
@@ -15,7 +15,7 @@ struct Card {
   uint8_t getValue() const;
   const Rank &getRank() const;
   const Suit &getSuit() const;
-  void giveToPlayer(const Player &player) const;
+  void giveToPlayer(Player &player) const;
 
   friend std::ostream &operator<<(std::ostream &os, const Card &c);
 };

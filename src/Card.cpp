@@ -1,4 +1,5 @@
 #include "blackjack/Card.hpp"
+#include "blackjack/Player.hpp"
 
 #include <cstdint>
 #include <ostream>
@@ -40,3 +41,5 @@ uint8_t Card::getValue() const {
 const Rank &Card::getRank() const { return rank; }
 
 const Suit &Card::getSuit() const { return suit; }
+
+void Card::giveToPlayer(Player &player) const { player.addCard(*this); }
