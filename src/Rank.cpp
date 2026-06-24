@@ -1,6 +1,7 @@
 #include "blackjack/Rank.hpp"
 
 #include <iostream>
+#include <stdexcept>
 
 std::ostream &operator<<(std::ostream &os, const Rank &r) {
   switch (r) {
@@ -31,8 +32,6 @@ std::ostream &operator<<(std::ostream &os, const Rank &r) {
   case Rank::King:
     return os << "K";
   default:
-    std::cerr << "Unknown rank encountered in operator<<: "
-              << static_cast<int>(r) << std::endl;
-    return os << "?";
+    throw std::out_of_range("Invalid Rank value: " + std::to_string(static_cast<int>(r)));
   }
 }

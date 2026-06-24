@@ -1,6 +1,7 @@
 #include "blackjack/Suit.hpp"
 
 #include <iostream>
+#include <stdexcept>
 
 std::ostream &operator<<(std::ostream &os, const Suit &s) {
   switch (s) {
@@ -13,8 +14,6 @@ std::ostream &operator<<(std::ostream &os, const Suit &s) {
   case Suit::Spades:
     return os << "\u2660";
   default:
-    std::cerr << "Unknown suit encountered in operator<<: "
-              << static_cast<int>(s) << std::endl;
-    return os << "?";
+    throw std::invalid_argument("Invalid suit: " + std::to_string(static_cast<int>(s)));
   }
 }

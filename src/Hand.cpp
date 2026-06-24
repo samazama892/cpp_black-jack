@@ -1,5 +1,7 @@
 #include "blackjack/Hand.hpp"
 
+#include "blackjack/Deck.hpp"
+
 #include <cstdint>
 #include <ostream>
 
@@ -17,6 +19,13 @@ std::ostream &operator<<(std::ostream &os, const Hand &h) {
 }
 
 void Hand::addCard(const Card &card) { cards_.push_back(card); }
+
+void Hand::hit(const Deck& deck) {
+  Card card = deck.draw();
+  addCard(card);
+}
+
+void Hand::clear() { cards_.clear(); }
 
 uint8_t Hand::getScore() const {
   uint8_t value = 0;
