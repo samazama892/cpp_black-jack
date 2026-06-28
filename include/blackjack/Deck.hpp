@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SUPERIDEN3_BLACKJACK_DECK_HPP
+#define SUPERIDEN3_BLACKJACK_DECK_HPP
 
 #include "blackjack/Card.hpp"
 
@@ -19,3 +20,5 @@ public:
   Card draw();
   std::size_t size() const noexcept;
 };
+
+#endif

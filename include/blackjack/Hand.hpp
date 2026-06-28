@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SUPERIDEN3_BLACKJACK_HAND_HPP
+#define SUPERIDEN3_BLACKJACK_HAND_HPP
 
 #include "blackjack/Card.hpp"
 
@@ -15,6 +16,8 @@ public:
 
   void addCard(const Card &card);
   void clear();
-  uint8_t getScore() const;
+  std::uint8_t getScore() const;
   const std::vector<Card> &getCards() const;
 };
+
+#endif

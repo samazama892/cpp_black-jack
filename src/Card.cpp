@@ -5,11 +5,11 @@
 #include <ostream>
 
 std::ostream &operator<<(std::ostream &os, const Card &c) {
-  os << c.rank << " of " << c.suit;
+  os << c.rank << c.suit;
   return os;
 }
 
-uint8_t Card::getValue() const {
+std::uint8_t Card::getValue() const {
   switch (rank) {
   case Rank::Two:
     return 2;

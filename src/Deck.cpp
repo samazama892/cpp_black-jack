@@ -3,10 +3,11 @@
 #include <algorithm>
 #include <random>
 #include <stdexcept>
+#include <cstdint>
 
 Deck::Deck() {
-  for (int suit = 0; suit < 4; ++suit) {
-    for (int rank = 0; rank < 13; ++rank) {
+  for (std::uint8_t suit = 0; suit < 4; ++suit) {
+    for (std::uint8_t rank = 0; rank < 13; ++rank) {
       cards_.push_back(Card{static_cast<Suit>(suit), static_cast<Rank>(rank)});
     }
   }

@@ -22,9 +22,9 @@ void Hand::addCard(const Card &card) { cards_.push_back(card); }
 
 void Hand::clear() { cards_.clear(); }
 
-uint8_t Hand::getScore() const {
-  uint8_t value = 0;
-  uint8_t numAces = 0; // Since Aces can be worth 1 or 11 in order for the best possible hand, we need to track how many we have
+std::uint8_t Hand::getScore() const {
+  std::uint8_t value = 0;
+  std::uint8_t numAces = 0; // Since Aces can be worth 1 or 11 in order for the best possible hand, we need to track how many we have
 
   for (const auto &card : cards_) {
     value += card.getValue();

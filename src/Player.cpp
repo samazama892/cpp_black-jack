@@ -1,5 +1,6 @@
 #include "blackjack/Player.hpp"
 #include "blackjack/Card.hpp"
+#include "blackjack/Deck.hpp"
 
 #include <ostream>
 
@@ -15,6 +16,6 @@ void Player::hit(Deck& deck) {
   addCard(card);
 }
 
-uint8_t Player::getHandValue() const { return hand_.getScore(); }
+std::uint8_t Player::getHandValue() const { return hand_.getScore(); }
 
 const Hand &Player::getHand() const { return hand_; }

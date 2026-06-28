@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SUPERIDEN3_BLACKJACK_RANK_HPP
+#define SUPERIDEN3_BLACKJACK_RANK_HPP
 
 #include <ostream>
 
@@ -19,3 +20,5 @@ enum class Rank {
 };
 
 std::ostream &operator<<(std::ostream &os, const Rank &r);
+
+#endif
