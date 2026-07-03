@@ -187,7 +187,7 @@ Player loses immediately.
 
 ### Dealer Busts
 
-All non-busted players win.
+All **non-busted** players win.
 
 ---
 

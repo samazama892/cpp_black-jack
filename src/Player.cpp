@@ -5,7 +5,7 @@
 #include <ostream>
 
 std::ostream &operator<<(std::ostream &os, const Player &p) {
-  os << "Player { hand: " << p.getHand() << " }";
+  os << "Player { hand: " << p.getHand() << ", stats: " << p.getStats() << " }";
   return os;
 }
 
