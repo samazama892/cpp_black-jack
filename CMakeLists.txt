@@ -12,15 +12,20 @@ file(GLOB_RECURSE PROJECT_SOURCES
     "${SOURCE_DIR}/*.cxx"
 )
 
+list(FILTER PROJECT_SOURCES EXCLUDE REGEX "/main\\.cpp$")
+
 if(NOT PROJECT_SOURCES)
     message(FATAL_ERROR "No C++ source files found in ${SOURCE_DIR}. Add sources to the repository.")
 endif()
 
-add_library(blackjack STATIC ${PROJECT_SOURCES})
+add_library(blackjack_lib STATIC ${PROJECT_SOURCES})
 
-target_include_directories(blackjack PUBLIC
+target_include_directories(blackjack_lib PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )
+
+add_executable(blackjack "${SOURCE_DIR}/main.cpp")
+target_link_libraries(blackjack PRIVATE blackjack_lib)
 
 option(BUILD_TESTING "Enable building tests" ON)
 if(BUILD_TESTING)

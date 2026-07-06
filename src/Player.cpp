@@ -3,19 +3,30 @@
 #include "blackjack/Deck.hpp"
 
 #include <ostream>
+#include <stdexcept>
 
 std::ostream &operator<<(std::ostream &os, const Player &p) {
-  os << "Player { hand: " << p.getHand() << ", stats: " << p.getStats() << " }";
+  os << "Player { hand: " << p.getHand() << " }";
   return os;
 }
 
-void Player::addCard(const Card &card) { hand_.addCard(card); }
+void Player::hit(Deck &deck) { hand_.addCard(deck.draw()); }
 
-void Player::hit(Deck& deck) {
-  const Card card = deck.draw();
-  addCard(card);
+void Player::addCard(Card card) { hand_.addCard(card); }
+
+void Player::clearHand() { hand_.clear(); }
+
+void Player::setChips(std::uint32_t amount) { chips_ = amount; }
+
+void Player::addChips(std::uint32_t amount) { chips_ += amount; }
+
+void Player::bet(std::uint32_t amount) {
+  if (amount > chips_) { throw std::out_of_range("Not enough chips to bet"); }
+  chips_ -= amount;
 }
 
-std::uint8_t Player::getHandValue() const { return hand_.getScore(); }
+int Player::getHandValue() const { return hand_.getScore(); }
 
 const Hand &Player::getHand() const { return hand_; }
+
+std::uint32_t Player::getChips() const { return chips_; }

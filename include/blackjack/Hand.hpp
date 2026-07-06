@@ -14,10 +14,11 @@ private:
 public:
   friend std::ostream &operator<<(std::ostream &os, const Hand &h);
 
-  void addCard(const Card &card);
+  void addCard(Card card);
   void clear();
-  std::uint8_t getScore() const;
+  int getScore() const;
   const std::vector<Card> &getCards() const;
+  bool hasBlackjack() const;
 };
 
 #endif

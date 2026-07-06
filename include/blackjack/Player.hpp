@@ -15,17 +15,26 @@ class Deck;
 class Player {
 private:
   Hand hand_;
-  Stats stats_;
+  // Stats stats_;
+  std::uint32_t chips_;
 
 public:
   friend std::ostream &operator<<(std::ostream &os, const Player &p);
 
-  void addCard(const Card &card);
-  void hit(Deck& deck);
+  void hit(Deck &deck);
+  void addCard(Card card);
+  void clearHand();
+  void setChips(std::uint32_t amount);
+  void addChips(std::uint32_t amount);
 
-  std::uint8_t getHandValue() const;
+  void bet(std::uint32_t amount);
+
+  int getHandValue() const;
   const Hand &getHand() const;
-  const Stats &getStats() const;
+  // const Stats &getStats() const;
+  std::uint32_t getChips() const;
+
+  bool hasBlackJack() const;
 };
 
 #endif

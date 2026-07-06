@@ -18,13 +18,13 @@ std::ostream &operator<<(std::ostream &os, const Hand &h) {
   return os;
 }
 
-void Hand::addCard(const Card &card) { cards_.push_back(card); }
+void Hand::addCard(Card card) { cards_.push_back(card); }
 
 void Hand::clear() { cards_.clear(); }
 
-std::uint8_t Hand::getScore() const {
-  std::uint8_t value = 0;
-  std::uint8_t numAces = 0; // Since Aces can be worth 1 or 11 in order for the best possible hand, we need to track how many we have
+int Hand::getScore() const {
+  int value = 0;
+  int numAces = 0; // Since Aces can be worth 1 or 11 in order to achieve the best possible hand, we need to track how many we have
 
   for (const auto &card : cards_) {
     value += card.getValue();
@@ -40,3 +40,5 @@ std::uint8_t Hand::getScore() const {
 }
 
 const std::vector<Card> &Hand::getCards() const { return cards_; }
+
+bool Hand::hasBlackjack() const { return getScore() == 21 && cards_.size() == 2; }

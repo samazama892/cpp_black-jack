@@ -21,6 +21,17 @@ TEST_CASE("Player hit modifies hand and deck", "[player]") {
   REQUIRE(d.size() == initial - 1);
 }
 
+TEST_CASE("Player hand values stream as numbers", "[player]") {
+  Player p;
+  p.addCard(Card{Suit::Spades, Rank::Ten});
+  p.addCard(Card{Suit::Hearts, Rank::Ace});
+
+  std::ostringstream oss;
+  oss << p.getHandValue();
+
+  REQUIRE(oss.str() == "21");
+}
+
 TEST_CASE("Player output contains name and card", "[player]") {
   Player p;
   p.addCard(Card{Suit::Diamonds, Rank::Three});

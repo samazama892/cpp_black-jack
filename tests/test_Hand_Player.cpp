@@ -88,9 +88,15 @@ TEST_CASE("Hand handles multiple aces with a bust risk", "[hand]") {
   REQUIRE(h.getScore() == 21);
 }
 
-TEST_CASE("Deck empties and throws", "[deck]") {
+TEST_CASE("Deck reshuffles from discard pile after exhaustion", "[deck]") {
   Deck d;
-  for (int i = 0; i < 52; ++i)
+  for (int i = 0; i < 52; ++i) {
     d.draw();
-  REQUIRE_THROWS_AS(d.draw(), std::runtime_error);
+  }
+
+  auto card = d.draw();
+  REQUIRE(static_cast<int>(card.rank) >= static_cast<int>(Rank::Ace));
+  REQUIRE(static_cast<int>(card.rank) <= static_cast<int>(Rank::King));
+  REQUIRE(static_cast<int>(card.suit) >= static_cast<int>(Suit::Clubs));
+  REQUIRE(static_cast<int>(card.suit) <= static_cast<int>(Suit::Spades));
 }
