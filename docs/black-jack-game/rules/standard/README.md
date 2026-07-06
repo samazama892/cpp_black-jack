@@ -8,6 +8,9 @@ The objective is to obtain a hand value closer to **21** than the dealer without
 
 Players do not compete against one another. Each player wins or loses independently against the dealer.
 
+> [!NOTE]
+> This implementation is essentially a rewrite of Red Dead Redemption's implementation.
+
 ---
 
 ## Objective

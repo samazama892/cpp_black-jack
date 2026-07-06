@@ -7,6 +7,12 @@
 #include <ostream>
 #include <cstdint>
 
+enum class RoundResolution {
+  PlayerWins,
+  DealerWins,
+  Push,
+};
+
 class StandardGame {
 public:
   static constexpr int MIN_BET_AMOUNT = 2;
@@ -16,6 +22,7 @@ public:
   StandardGame() {}
 
   void play();
+  static RoundResolution resolveRoundOutcome(bool playerBusted, bool dealerBusted, int playerScore, int dealerScore);
 
   friend std::ostream &operator<<(std::ostream &os, const StandardGame &g);
 

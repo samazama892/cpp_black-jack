@@ -8,6 +8,22 @@ void cout_hands(const Player& player, const Player& dealer) {
   std::cout << "Dealer hand: ?, " << dealer.getHand() << "\n\n";
 }
 
+RoundResolution StandardGame::resolveRoundOutcome(bool playerBusted, bool dealerBusted, int playerScore, int dealerScore) {
+  if (playerBusted) {
+    return RoundResolution::DealerWins;
+  }
+  if (dealerBusted) {
+    return RoundResolution::PlayerWins;
+  }
+  if (playerScore > dealerScore) {
+    return RoundResolution::PlayerWins;
+  }
+  if (playerScore < dealerScore) {
+    return RoundResolution::DealerWins;
+  }
+  return RoundResolution::Push;
+}
+
 void StandardGame::play() {
   std::cout << "WELCOME TO BLACKJACK!!!\nMade by Iden Gomes, and based on the implementation in Red Dead Redemption.\n\n";
 
@@ -37,7 +53,7 @@ void StandardGame::play() {
         valid_bet = true;
 
         std::cout << "You bet " << bet_amount << " chips.\n";
-        if (bet_amount == player_.getChips()) { std::cout << "You're all in!\n"; }
+        if (bet_amount == player_.getChips()) { std::cout << "DESPERATION!!\n"; }
         std::cout << '\n';
       } catch (const std::out_of_range &e) {
         std::cout << "Invalid bet. Please try again.\n\n";
@@ -107,7 +123,7 @@ void StandardGame::play() {
         player_.hit(deck_);
         if (player_.getHandValue() > 21) {
           cout_hands(player_, dealer_);
-          std::cout << "BUST! You exceeded 21. You lose your bet of " << bet_amount << " chips.\n";
+          std::cout << "BUST! You exceeded 21 with a score of " << player_.getHandValue() << ". You lose your bet of " << bet_amount << " chips.\n";
           std::cout << "You now have " << player_.getChips() << " chips.\n\n";
           busted = true;
         }
@@ -119,31 +135,36 @@ void StandardGame::play() {
       }
     }
 
-    std::cout << "Dealer's turn!\nDealer reveals hole card... " << hole_card << "!\n";
+    std::cout << "Dealer's turn!\nDealer reveals hole card... " << hole_card << "!\n\n";
     dealer_.addCard(hole_card);
     while (dealer_.getHandValue() < 17) {
       dealer_.hit(deck_);
       std::cout << "Dealer hits and draws: " << dealer_.getHand().getCards().back() << '\n';
     }
+    const auto resolution = resolveRoundOutcome(busted, dealer_.getHandValue() > 21, player_.getHandValue(), dealer_.getHandValue());
+
     if (dealer_.getHandValue() > 21) {
       std::cout << "Dealer busts!\n";
-      if (!busted) {
-        std::cout << "Oooh, sorry, but you still busted!\nYou still lose your bet...\n\n";
-      } else {
-        std::cout << "You win " << bet_amount << " chips!\n\n";
-        player_.addChips(bet_amount * 2); // Return the bet and add winnings
-      }
     } else {
       std::cout << "Dealer stands with a hand value of " << dealer_.getHandValue() << ".\n";
-      if (dealer_.getHandValue() > player_.getHandValue()) {
-        std::cout << "Dealer wins! You lose your bet of " << bet_amount << " chips.\n\n";
-      } else if (dealer_.getHandValue() < player_.getHandValue()) {
+    }
+
+    switch (resolution) {
+      case RoundResolution::PlayerWins:
         std::cout << "You win! You gain " << bet_amount << " chips!\n\n";
         player_.addChips(bet_amount * 2); // Return the bet and add winnings
-      } else {
+        break;
+      case RoundResolution::DealerWins:
+        if (busted) {
+          std::cout << "You busted, so you lose your bet of " << bet_amount << " chips.\n\n";
+        } else {
+          std::cout << "Dealer wins! You lose your bet of " << bet_amount << " chips.\n\n";
+        }
+        break;
+      case RoundResolution::Push:
         std::cout << "PUSH! It's a tie. Your bet of " << bet_amount << " chips is returned.\n\n";
         player_.addChips(bet_amount); // Return the bet to the player
-      }
+        break;
     }
 
     player_.clearHand();
