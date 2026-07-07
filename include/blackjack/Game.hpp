@@ -6,6 +6,7 @@
 
 #include <ostream>
 #include <cstdint>
+#include <vector>
 
 enum class RoundResolution {
   PlayerWins,
@@ -22,11 +23,24 @@ public:
   StandardGame() {}
 
   void play();
+  static bool canSplit(const Hand &hand);
   static RoundResolution resolveRoundOutcome(bool playerBusted, bool dealerBusted, int playerScore, int dealerScore);
 
   friend std::ostream &operator<<(std::ostream &os, const StandardGame &g);
 
 private:
+  struct HandState {
+    Player player;
+    std::uint32_t bet_amount = 0;
+    bool busted = false;
+  };
+
+  bool handleInsurance(std::uint32_t bet_amount);
+  void playHand(Player &bankroll, Player &player, const Player &dealer, Deck &deck, std::uint32_t &bet_amount, bool &busted);
+  void playSplitHands(Player &bankroll, Player &dealer, Deck &deck, std::vector<HandState> &hands);
+  void playDealerTurn(Player &dealer, Deck &deck);
+  void settleHand(Player &bankroll, const Player &hand_player, const Player &dealer, std::uint32_t bet_amount, bool busted);
+
   Player player_;
   Player dealer_;
   Deck deck_;

@@ -1,4 +1,4 @@
-# Splitting
+# [Splitting](https://share.google/aimode/DYuH1LSGwIfPKMpPG)
 
 In blackjack, splitting is a strategic option that allows you to turn a single pair of cards into two separate, independent hands. This rule can help you turn a inherently weak starting hand into two potentially winning positions against the dealer.
 

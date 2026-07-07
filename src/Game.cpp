@@ -1,11 +1,156 @@
 #include "blackjack/Game.hpp"
 
 #include <iostream>
+#include <utility>
 #include <vector>
 
 void cout_hands(const Player& player, const Player& dealer) {
   std::cout << "Your hand: " << player.getHand() << '\n';
   std::cout << "Dealer hand: ?, " << dealer.getHand() << "\n\n";
+}
+
+bool StandardGame::canSplit(const Hand &hand) {
+  const auto &cards = hand.getCards();
+  return cards.size() == 2 && cards[0].getRank() == cards[1].getRank();
+}
+
+bool StandardGame::handleInsurance(std::uint32_t bet_amount) {
+  if (dealer_.getHand().getCards()[0].rank != Rank::Ace) {
+    return false;
+  }
+
+  std::cout << "Dealer has an Ace showing. Do you want to take insurance? (y/n): ";
+  char insurance_choice;
+  bool valid_insurance = false;
+  while (!valid_insurance) {
+    std::cin >> insurance_choice;
+    if (insurance_choice == 'y' || insurance_choice == 'Y') {
+      std::uint32_t max_insurance_bet = bet_amount / 2;
+      std::uint32_t insurance_bet;
+      std::cout << "Enter your insurance bet (up to " << max_insurance_bet << "): ";
+      std::cout.flush();
+      std::cin >> insurance_bet;
+      if (insurance_bet > max_insurance_bet) {
+        std::cout << "Insurance bet exceeds maximum allowed.\n\n";
+        continue;
+      }
+      try {
+        player_.bet(insurance_bet);
+        std::cout << "You placed an insurance bet of " << insurance_bet << " chips.\n";
+        if (dealer_.getHand().hasBlackjack()) {
+          std::cout << "Dealer has blackjack! Insurance pays 2:1.\n\n";
+          player_.addChips(insurance_bet * 3);
+        } else {
+          std::cout << "Dealer does not have blackjack. You lose your insurance bet.\n\n";
+        }
+      } catch (const std::out_of_range &e) {
+        std::cout << "Not enough chips for insurance bet.\n\n";
+        continue;
+      }
+      valid_insurance = true;
+    } else {
+      valid_insurance = true;
+    }
+  }
+
+  return true;
+}
+
+void StandardGame::playHand(Player &bankroll, Player &player, const Player &dealer, Deck &deck, std::uint32_t &bet_amount, bool &busted) {
+  bool stand = false;
+  busted = false;
+
+  while (!stand && !busted) {
+    cout_hands(player, dealer);
+    std::cout << "Your hand value: " << player.getHandValue() << '\n';
+    std::cout << "Do you want to hit, stand, or double down? (h/s/d): ";
+    std::cout.flush();
+    char choice;
+    std::cin >> choice;
+    switch (choice) {
+      case 'h':
+      case 'H':
+        player.hit(deck);
+        if (player.getHandValue() > 21) {
+          cout_hands(player, dealer);
+          std::cout << "BUST! You exceeded 21 with a score of " << player.getHandValue() << ". You lose your bet of " << bet_amount << " chips.\n";
+          std::cout << "You now have " << bankroll.getChips() << " chips.\n\n";
+          busted = true;
+        }
+        break;
+      case 's':
+      case 'S':
+        std::cout << "STAND!\n\n";
+        stand = true;
+        break;
+      case 'd':
+      case 'D':
+        if (bankroll.getChips() >= bet_amount) {
+          std::cout << "DOUBLE DOWN! Your bet increases from " << bet_amount << " to " << bet_amount * 2 << ".\n\n";
+          bankroll.bet(bet_amount);
+          bet_amount *= 2;
+          player.hit(deck);
+          if (player.getHandValue() > 21) {
+            cout_hands(player, dealer);
+            std::cout << "BUST! You exceeded 21 with a score of " << player.getHandValue() << ". You lose your bet of " << bet_amount << " chips.\n";
+            std::cout << "You now have " << bankroll.getChips() << " chips.\n\n";
+            busted = true;
+          }
+        } else {
+          std::cout << "Not enough chips to double down.\n\n";
+          continue;
+        }
+        stand = true;
+        break;
+      default:
+        std::cout << "Invalid choice. Please enter 'h' to hit, 's' to stand, or 'd' to double down.\n\n";
+        break;
+    }
+  }
+}
+
+void StandardGame::playSplitHands(Player &bankroll, Player &dealer, Deck &deck, std::vector<HandState> &hands) {
+  for (auto &hand_state : hands) {
+    playHand(bankroll, hand_state.player, dealer, deck, hand_state.bet_amount, hand_state.busted);
+  }
+
+  playDealerTurn(dealer, deck);
+  for (auto &hand_state : hands) {
+    settleHand(bankroll, hand_state.player, dealer, hand_state.bet_amount, hand_state.busted);
+  }
+}
+
+void StandardGame::playDealerTurn(Player &dealer, Deck &deck) {
+  std::cout << "Dealer's turn!\nDealer reveals hole card... " << hole_card << "!\n\n";
+  dealer.addCard(hole_card);
+  while (dealer.getHandValue() < 17) {
+    dealer.hit(deck);
+    std::cout << "Dealer hits and draws: " << dealer.getHand().getCards().back() << '\n';
+  }
+}
+
+void StandardGame::settleHand(Player &bankroll, const Player &hand_player, const Player &dealer, std::uint32_t bet_amount, bool busted) {
+  if (busted) {
+    std::cout << "You busted, so you lose your bet of " << bet_amount << " chips.\n\n";
+    return;
+  }
+
+  if (dealer.getHandValue() > 21) {
+    std::cout << "Dealer busts!\n";
+    std::cout << "You win! You gain " << bet_amount << " chips!\n\n";
+    bankroll.addChips(bet_amount * 2);
+    return;
+  }
+
+  if (hand_player.getHandValue() > dealer.getHandValue()) {
+    std::cout << "You win! You gain " << bet_amount << " chips!\n\n";
+    bankroll.addChips(bet_amount * 2);
+  } else if (hand_player.getHandValue() < dealer.getHandValue()) {
+    std::cout << "Dealer wins! You lose your bet of " << bet_amount << " chips.\n\n";
+  } else {
+    std::cout << "PUSH! It's a tie. Your bet of " << bet_amount << " chips is returned.\n\n";
+    bankroll.addChips(bet_amount);
+  }
 }
 
 RoundResolution StandardGame::resolveRoundOutcome(bool playerBusted, bool dealerBusted, int playerScore, int dealerScore) {
@@ -77,118 +222,38 @@ void StandardGame::play() {
     }
 
     if (dealer_.getHand().getCards()[0].rank == Rank::Ace) {
-      std::cout << "Dealer has an Ace showing. Do you want to take insurance? (y/n): ";
-      char insurance_choice;
-      bool valid_insurance = false;
-      while (!valid_insurance) {
-        std::cin >> insurance_choice;
-        if (insurance_choice == 'y' || insurance_choice == 'Y') {
-          std::uint32_t max_insurance_bet = bet_amount / 2;
-          std::uint32_t insurance_bet;
-          std::cout << "Enter your insurance bet (up to " << max_insurance_bet << "): ";
-          std::cout.flush();
-          std::cin >> insurance_bet;
-          if (insurance_bet > max_insurance_bet) {
-            std::cout << "Insurance bet exceeds maximum allowed.\n\n";
-            continue;
-          } else { valid_insurance = true; }
-          try {
-            player_.bet(insurance_bet);
-            std::cout << "You placed an insurance bet of " << insurance_bet << " chips.\n";
-            if (dealer_.getHand().hasBlackjack()) {
-              std::cout << "Dealer has blackjack! Insurance pays 2:1.\n\n";
-              player_.addChips(insurance_bet * 3); // Payout for insurance is 2:1
-            } else {
-              std::cout << "Dealer does not have blackjack. You lose your insurance bet.\n\n";
-            }
-          } catch (const std::out_of_range &e) {
-            std::cout << "Not enough chips for insurance bet.\n\n";
-            continue;
-          }
-        } else { break; }
+      handleInsurance(bet_amount);
+    }
+
+    std::vector<HandState> hands;
+    if (canSplit(player_.getHand()) && player_.getChips() >= bet_amount) {
+      std::cout << "You have a pair. Do you want to split? (y/n): ";
+      char split_choice;
+      std::cin >> split_choice;
+      if (split_choice == 'y' || split_choice == 'Y') {
+        const auto initial_cards = player_.getHand().getCards();
+        Player first_hand;
+        Player second_hand;
+        first_hand.addCard(initial_cards[0]);
+        second_hand.addCard(initial_cards[1]);
+
+        first_hand.hit(deck_);
+        second_hand.hit(deck_);
+
+        player_.bet(bet_amount);
+        hands.push_back(HandState{std::move(first_hand), bet_amount, false});
+        hands.push_back(HandState{std::move(second_hand), bet_amount, false});
+        std::cout << "You split your pair into two hands.\n\n";
       }
     }
 
-    bool stand = false;
-    bool busted = false;
-    while (!stand && !busted) {
-      cout_hands(player_, dealer_);
-      std::cout << "Your hand value: " << player_.getHandValue() << '\n';
-      std::cout << "Do you want to hit, stand, or double down? (h/s/d): ";
-      std::cout.flush();
-      char choice;
-      std::cin >> choice;
-      switch (choice) {
-        case 'h':
-        case 'H':
-          player_.hit(deck_);
-          if (player_.getHandValue() > 21) {
-            cout_hands(player_, dealer_);
-            std::cout << "BUST! You exceeded 21 with a score of " << player_.getHandValue() << ". You lose your bet of " << bet_amount << " chips.\n";
-            std::cout << "You now have " << player_.getChips() << " chips.\n\n";
-            busted = true;
-          }
-          break;
-        case 's':
-        case 'S':
-          std::cout << "STAND!\n\n";
-          stand = true;
-          break;
-        case 'd':
-        case 'D':
-          if (player_.getChips() >= bet_amount) {
-            std::cout << "DOUBLE DOWN! Your bet increases from " << bet_amount << " to " << bet_amount * 2 << ".\n\n";
-            player_.bet(bet_amount);
-            bet_amount *= 2;
-            player_.hit(deck_);
-            if (player_.getHandValue() > 21) {
-              cout_hands(player_, dealer_);
-              std::cout << "BUST! You exceeded 21 with a score of " << player_.getHandValue() << ". You lose your bet of " << bet_amount << " chips.\n";
-              std::cout << "You now have " << player_.getChips() << " chips.\n\n";
-              busted = true;
-            }
-          } else {
-            std::cout << "Not enough chips to double down.\n\n";
-            continue;
-          }
-          stand = true;
-          break;
-        default:
-          std::cout << "Invalid choice. Please enter 'h' to hit, 's' to stand, or 'd' to double down.\n\n";
-          break;
-      }
-    }
-
-    std::cout << "Dealer's turn!\nDealer reveals hole card... " << hole_card << "!\n\n";
-    dealer_.addCard(hole_card);
-    while (dealer_.getHandValue() < 17) {
-      dealer_.hit(deck_);
-      std::cout << "Dealer hits and draws: " << dealer_.getHand().getCards().back() << '\n';
-    }
-    const auto resolution = resolveRoundOutcome(busted, dealer_.getHandValue() > 21, player_.getHandValue(), dealer_.getHandValue());
-
-    if (dealer_.getHandValue() > 21) {
-      std::cout << "Dealer busts!\n";
+    if (hands.empty()) {
+      bool busted = false;
+      playHand(player_, player_, dealer_, deck_, bet_amount, busted);
+      playDealerTurn(dealer_, deck_);
+      settleHand(player_, player_, dealer_, bet_amount, busted);
     } else {
-      std::cout << "Dealer stands with a hand value of " << dealer_.getHandValue() << ".\n";
-    }
-
-    switch (resolution) {
-      case RoundResolution::PlayerWins:
-        std::cout << "You win! You gain " << bet_amount << " chips!\n\n";
-        player_.addChips(bet_amount * 2); // Return the bet and add winnings
-        break;
-      case RoundResolution::DealerWins:
-        if (busted) {
-          std::cout << "You busted, so you lose your bet of " << bet_amount << " chips.\n\n";
-        } else {
-          std::cout << "Dealer wins! You lose your bet of " << bet_amount << " chips.\n\n";
-        }
-        break;
-      case RoundResolution::Push:
-        std::cout << "PUSH! It's a tie. Your bet of " << bet_amount << " chips is returned.\n\n";
-        player_.addChips(bet_amount); // Return the bet to the player
-        break;
+      playSplitHands(player_, dealer_, deck_, hands);
     }
 
     if (dealer_.getChips() < MIN_BET_AMOUNT) {
