@@ -20,6 +20,32 @@ endif()
 
 add_library(blackjack_lib STATIC ${PROJECT_SOURCES})
 
+add_library(project_options INTERFACE)
+
+target_compile_options(project_options INTERFACE
+    -Wall
+    -Wextra
+    -Werror
+    -Wpedantic
+
+    $<$<CONFIG:Debug>:-Og -g>
+
+    $<$<CONFIG:Release>:
+        -O2
+        -Wp,-ffunction-sections
+        -Wp,-fdata-sections
+    >
+)
+
+target_link_options(project_options INTERFACE
+    $<$<CONFIG:Release>:
+        -s
+        -Wl,--gc-sections
+    >
+)
+
+target_link_libraries(blackjack_lib PRIVATE project_options)
+
 target_include_directories(blackjack_lib PUBLIC
     "${CMAKE_CURRENT_SOURCE_DIR}/include"
 )

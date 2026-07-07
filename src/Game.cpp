@@ -33,7 +33,6 @@ void StandardGame::play() {
   bool playing = true;
 
   while (playing) {
-    // Place bet
     std::cout << "You have " << player_.getChips() << " chips.\n";
     if (player_.getChips() < MIN_BET_AMOUNT) {
       std::cout << "You don't have enough chips to continue playing. Game over!\n\n";
@@ -60,7 +59,6 @@ void StandardGame::play() {
       }
     }
 
-    // Get starting cards
     player_.hit(deck_);
     hole_card = deck_.draw();
     player_.hit(deck_);
@@ -116,22 +114,48 @@ void StandardGame::play() {
     while (!stand && !busted) {
       cout_hands(player_, dealer_);
       std::cout << "Your hand value: " << player_.getHandValue() << '\n';
-      std::cout << "Do you want to hit or stand? (h/s): ";
+      std::cout << "Do you want to hit, stand, or double down? (h/s/d): ";
+      std::cout.flush();
       char choice;
       std::cin >> choice;
-      if (choice == 'h' || choice == 'H') {
-        player_.hit(deck_);
-        if (player_.getHandValue() > 21) {
-          cout_hands(player_, dealer_);
-          std::cout << "BUST! You exceeded 21 with a score of " << player_.getHandValue() << ". You lose your bet of " << bet_amount << " chips.\n";
-          std::cout << "You now have " << player_.getChips() << " chips.\n\n";
-          busted = true;
-        }
-      } else if (choice == 's' || choice == 'S') {
-        std::cout << "STAND!\n\n";
-        stand = true;
-      } else {
-        std::cout << "Invalid choice. Please enter 'h' to hit or 's' to stand.\n\n";
+      switch (choice) {
+        case 'h':
+        case 'H':
+          player_.hit(deck_);
+          if (player_.getHandValue() > 21) {
+            cout_hands(player_, dealer_);
+            std::cout << "BUST! You exceeded 21 with a score of " << player_.getHandValue() << ". You lose your bet of " << bet_amount << " chips.\n";
+            std::cout << "You now have " << player_.getChips() << " chips.\n\n";
+            busted = true;
+          }
+          break;
+        case 's':
+        case 'S':
+          std::cout << "STAND!\n\n";
+          stand = true;
+          break;
+        case 'd':
+        case 'D':
+          if (player_.getChips() >= bet_amount) {
+            std::cout << "DOUBLE DOWN! Your bet increases from " << bet_amount << " to " << bet_amount * 2 << ".\n\n";
+            player_.bet(bet_amount);
+            bet_amount *= 2;
+            player_.hit(deck_);
+            if (player_.getHandValue() > 21) {
+              cout_hands(player_, dealer_);
+              std::cout << "BUST! You exceeded 21 with a score of " << player_.getHandValue() << ". You lose your bet of " << bet_amount << " chips.\n";
+              std::cout << "You now have " << player_.getChips() << " chips.\n\n";
+              busted = true;
+            }
+          } else {
+            std::cout << "Not enough chips to double down.\n\n";
+            continue;
+          }
+          stand = true;
+          break;
+        default:
+          std::cout << "Invalid choice. Please enter 'h' to hit, 's' to stand, or 'd' to double down.\n\n";
+          break;
       }
     }
 
@@ -165,6 +189,11 @@ void StandardGame::play() {
         std::cout << "PUSH! It's a tie. Your bet of " << bet_amount << " chips is returned.\n\n";
         player_.addChips(bet_amount); // Return the bet to the player
         break;
+    }
+
+    if (dealer_.getChips() < MIN_BET_AMOUNT) {
+      std::cout << "Dealer doesn't have enough chips to continue playing. You win the game!\n\n";
+      break;
     }
 
     player_.clearHand();
