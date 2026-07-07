@@ -2,14 +2,14 @@
 
 ## Version 1
 
-* [ ] Player can play as a contestant.
-* [ ] Standard Blackjack rules.
-* [ ] Single human player versus dealer.
-* [ ] Terminal-based interface.
+* [x] Player can play as a contestant.
+* [x] Standard Blackjack rules.
+* [x] Single human player versus dealer.
+* [x] Terminal-based interface.
 
 ## Version 2
 
-* [ ] Player can choose to play as dealer.
+* [ ] Player can choose to play as dealer. <!-- Actually now that I think about it this is gonna be boring. -->
 * [ ] Dealer AI controls contestants when needed.
 
 ## Version 3
