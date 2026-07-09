@@ -96,7 +96,9 @@ void StandardGame::playHand(Player &bankroll, Player &player, const Player &deal
           std::cout << "DOUBLE DOWN! Your bet increases from " << bet_amount << " to " << bet_amount * 2 << ".\n\n";
           bankroll.bet(bet_amount);
           bet_amount *= 2;
-          player.hit(deck);
+          Card card = deck.draw();
+          player.addCard(card);
+          std::cout << "Your new card is: " << card << "\n\n";
           if (player.getHandValue() > 21) {
             cout_hands(player, dealer);
             std::cout << "BUST! You exceeded 21 with a score of " << player.getHandValue() << ". You lose your bet of " << bet_amount << " chips.\n";
@@ -130,6 +132,7 @@ void StandardGame::playSplitHands(Player &bankroll, Player &dealer, Deck &deck, 
 void StandardGame::playDealerTurn(Player &dealer, Deck &deck) {
   std::cout << "Dealer's turn!\nDealer reveals hole card... " << hole_card << "!\n\n";
   dealer.addCard(hole_card);
+  std::cout << "Dealer's hand is now " << dealer.getHand() << "\n\n";
   while (dealer.getHandValue() < 17) {
     dealer.hit(deck);
     std::cout << "Dealer hits and draws: " << dealer.getHand().getCards().back() << '\n';
@@ -182,7 +185,7 @@ RoundResolution StandardGame::resolveRoundOutcome(bool playerBusted, bool dealer
 }
 
 void StandardGame::play() {
-  std::cout << "WELCOME TO BLACKJACK!!!\nMade by Iden Gomes, and based on the implementation in Red Dead Redemption.\n\n";
+  std::cout << "WELCOME TO BLACKJACK!!!\nMade by Iden Gomes, based on the classic game of blackjack.\n\n";
 
   player_.setChips(CHIPS_PER_PERSON);
   dealer_.setChips(CHIPS_PER_PERSON);
@@ -190,6 +193,7 @@ void StandardGame::play() {
   bool playing = true;
 
   while (playing) {
+    std::cout << "---" << "\n\n";
     deck_.shuffle();
     std::cout << "You have " << player_.getChips() << " chips.\n";
     if (player_.getChips() < MIN_BET_AMOUNT) {

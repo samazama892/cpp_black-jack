@@ -18,6 +18,7 @@ for arg in "$@"; do
 			;;
 		--clean)
 			rm -rf build
+			exit
 			;;
 		*)
 			echo "Unknown argument: $arg"
