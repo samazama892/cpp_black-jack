@@ -4,6 +4,8 @@
 #include <utility>
 #include <vector>
 
+StandardGame::StandardGame() {}
+
 void cout_hands(const Player& player, const Player& dealer) {
   std::cout << "Your hand: " << player.getHand() << '\n';
   std::cout << "Dealer hand: ?, " << dealer.getHand() << "\n\n";
@@ -41,7 +43,7 @@ bool StandardGame::handleInsurance(std::uint32_t bet_amount) {
           std::cout << "Dealer has blackjack! Insurance pays 2:1.\n\n";
           player_.addChips(insurance_bet * 3);
         } else {
-          std::cout << "Dealer does not have blackjack. You lose your insurance bet.\n\n";
+          std::cout << "Dealer does not have blackjack. You lose your insurance bet.\nYou now have " << player_.getChips() << " chips.\n\n";
         }
       } catch (const std::out_of_range &e) {
         std::cout << "Not enough chips for insurance bet.\n\n";
@@ -63,6 +65,11 @@ void StandardGame::playHand(Player &bankroll, Player &player, const Player &deal
   while (!stand && !busted) {
     cout_hands(player, dealer);
     std::cout << "Your hand value: " << player.getHandValue() << '\n';
+    if (player.getHandValue() == 21) {
+      std::cout << "You have 21! You must stand.\n\n";
+      stand = true;
+      continue;
+    }
     std::cout << "Do you want to hit, stand, or double down? (h/s/d): ";
     std::cout.flush();
     char choice;
@@ -127,6 +134,11 @@ void StandardGame::playDealerTurn(Player &dealer, Deck &deck) {
     dealer.hit(deck);
     std::cout << "Dealer hits and draws: " << dealer.getHand().getCards().back() << '\n';
   }
+  if (dealer.getHandValue() > 21) {
+    std::cout << "Dealer busts with a hand value of " << dealer.getHandValue() << "!\n\n";
+    return;
+  }
+  std::cout << "Dealer stands with a hand value of " << dealer.getHandValue() << ".\n\n";
 }
 
 void StandardGame::settleHand(Player &bankroll, const Player &hand_player, const Player &dealer, std::uint32_t bet_amount, bool busted) {
@@ -178,6 +190,7 @@ void StandardGame::play() {
   bool playing = true;
 
   while (playing) {
+    deck_.shuffle();
     std::cout << "You have " << player_.getChips() << " chips.\n";
     if (player_.getChips() < MIN_BET_AMOUNT) {
       std::cout << "You don't have enough chips to continue playing. Game over!\n\n";

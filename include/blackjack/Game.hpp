@@ -20,7 +20,7 @@ public:
   static constexpr int MAX_BET_AMOUNT = 10;
   static constexpr int CHIPS_PER_PERSON = MAX_BET_AMOUNT * 10;
 
-  StandardGame() {}
+  StandardGame();
 
   void play();
   static bool canSplit(const Hand &hand);
