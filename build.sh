@@ -1,9 +1,8 @@
 #!/bin/sh
 set -e
 
-if ! which cmake > /dev/null
-then
-	echo "cmake could not be found. Please install cmake to build the project."
+if ! which cmake ctest > /dev/null; then
+	echo "cmake or ctest could not be found. Please install cmake and ctest to build the project." >&2
 	exit 1
 fi
 
@@ -17,7 +16,20 @@ for arg in "$@"; do
 			FLAGS="$FLAGS -DCMAKE_BUILD_TYPE=Release"
 			;;
 		--clean)
-			rm -rf build
+			rm -rf build/ bin/
+			exit
+			;;
+		--no-cmake)
+			if [ -z "$CXX" ]; then
+				echo "CXX is not set. Please set CXX to your C++ compiler." >&2
+				exit 1
+			fi
+			mkdir -p build/
+			$CXX $CFLAGS -o build/blackjack src/*.cpp -I include/
+			exit
+			;;
+		--help)
+			echo "Usage: $0 [--debug] [--release] [--clean]"
 			exit
 			;;
 		*)
